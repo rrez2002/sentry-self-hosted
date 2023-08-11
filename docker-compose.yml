@@ -1,0 +1,75 @@
+version: '3.7'
+
+services: 
+  sentry-redis:
+    image: redis
+    container_name: sentry-redis
+    hostname: sentry-redis
+    networks:
+      - sentry
+    volumes:
+      - './data/sentry/redis/data:/data'
+
+  sentry-postgres:
+    image: postgres
+    container_name: sentry-postgres
+    hostname: sentry-postgres
+    environment:
+      - POSTGRES_USER=sentry
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=sentry
+    networks:
+      - sentry
+    volumes:
+      - './data/sentry/postgres:/var/lib/postgres/data'
+
+  sentry-base:
+    image: sentry
+    container_name: sentry-base
+    hostname: sentry-base
+    ports:
+      - '9000:9000'
+    env_file:
+      - .env
+    depends_on:
+      - sentry-redis
+      - sentry-postgres
+    networks:
+      - sentry
+    volumes:
+      - './data/sentry/sentry:/var/lib/sentry/files'
+
+  sentry-cron:
+    image: sentry
+    container_name: sentry-cron
+    hostname: sentry-cron
+    env_file:
+      - .env
+    depends_on:
+      - sentry-redis
+      - sentry-postgres
+    command: "sentry run cron"
+    networks:
+      - sentry
+    volumes:
+      - './data/sentry/sentry:/var/lib/sentry/files'
+
+  sentry-worker:
+    image: sentry
+    container_name: sentry-worker
+    hostname: sentry-worker
+    env_file:
+      - .env
+    depends_on:
+      - sentry-redis
+      - sentry-postgres
+    command: "sentry run worker"
+    networks:
+      - sentry
+    volumes:
+      - './data/sentry/sentry:/var/lib/sentry/files'
+
+networks:
+  sentry:
+    driver: bridge
+    
