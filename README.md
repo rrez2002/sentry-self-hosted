@@ -1,22 +1,27 @@
 ## Description
-    install self hosted sentry
+**install self hosted sentry**
 
-## Installation
-```bash
-# get generate secret key
+# Installation
+**get generated secret key**
+~~~bash
 $ sudo docker compose run --rm sentry-base config generate-secret-key
-```
-```bash
-# in .env file 
-SENTRY_SECRET_KEY=secret-key
-```
+~~~
 
-```bash
-# upgrade config
+**change to .env file**
+
+`SENTRY_SECRET_KEY`=secret-key
+
+**upgrade config**
+~~~bash
 $ sudo docker compose run --rm sentry-base upgrade
-```
+~~~
 
-## Running 
-```bash
+**Running**
+~~~bash
 $ sudo docker compose up -d
-```
+~~~
+
+**open to browser:  [Sentry Login](http://0.0.0.0:9000/)**
+
+
+#
